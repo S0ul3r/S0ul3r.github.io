@@ -7,3 +7,6 @@ dist
 
 # Local reference only – CV source files, not for repo
 references/
+
+# Assets are in public/ only (used by build); ignore root media to avoid duplicates
+/media/
