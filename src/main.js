@@ -66,10 +66,21 @@ document.getElementById('experience-list').innerHTML = cv.experience
   )
   .join('');
 
+const baseUrl = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+
 document.getElementById('projects-list').innerHTML = cv.projects
   .map((p) => {
     const imageLink = p.videoUrl || p.website;
-    const imageSrc = p.image ? esc(p.image) : '';
+    const rawImage = p.image ?? '';
+    let imageSrc = '';
+    if (rawImage) {
+      if (rawImage.startsWith('http')) {
+        imageSrc = rawImage;
+      } else {
+        const path = rawImage.startsWith('/') ? rawImage : '/' + rawImage;
+        imageSrc = baseUrl + path;
+      }
+    }
     const imageHtml = imageSrc
       ? `<a href="${esc(imageLink)}" target="_blank" rel="noopener" class="card-project-image">
           <img src="${imageSrc}" alt="${esc(p.name)}" loading="lazy" />
