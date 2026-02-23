@@ -134,10 +134,13 @@ document.getElementById('education-list').innerHTML = cv.education
   )
   .join('');
 
+const flagCdnUrl = (code) => (code ? `https://flagcdn.com/w80/${esc(code)}.png` : '');
+
 document.getElementById('languages-list').innerHTML = cv.languages
   .map(
     (l) => `
   <div class="language-row reveal">
+    ${l.flagCode ? `<img class="language-flag" src="${flagCdnUrl(l.flagCode)}" alt="" width="40" height="30" loading="lazy" />` : ''}
     <span class="language-name">${esc(l.language)}</span>
     <span class="language-fluency">${esc(l.fluency)}</span>
   </div>`

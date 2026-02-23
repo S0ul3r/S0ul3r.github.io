@@ -68,14 +68,14 @@ export const cv = {
       name: 'Macro execute and recorder',
       website: 'https://github.com/S0ul3r/Bober-macro-maker',
       description: 'Macro automation tool, mainly for the game "Where Winds Meet". Create custom macros to cast combos that can be used in game.',
-      tags: ['Python'],
+      tags: ['C#'],
       image: '/media/Bober-macro-maker.png',
     },
     {
       name: 'Min spendings',
       website: 'https://github.com/S0ul3r/min_spendings',
       description: 'Mobile application for android and iOS to track your monthly spendings, so you have better overview how much and on what you are spending your money.',
-      tags: ['React Native', 'TypeScript'],
+      tags: ['Dart', 'C++', 'CMake', 'Swift'],
       image: '/media/min_spendings.png',
     },
     {
@@ -102,8 +102,8 @@ export const cv = {
     { name: 'Tools & Practices', keywords: ['GitHub', 'Git', 'Agile', 'Scrum (Scrum Master)'] },
   ],
   languages: [
-    { language: 'Polish', fluency: 'Native' },
-    { language: 'English', fluency: 'C2 (Proficient)' },
+    { language: 'Polish', fluency: 'Native', flagCode: 'pl' },
+    { language: 'English', fluency: 'C2 (Proficient)', flagCode: 'gb' },
   ],
   certifications: [
     { title: 'Microsoft Certified: Azure Fundamentals', issuer: 'Microsoft', date: '2023' },
@@ -147,4 +147,8 @@ export const devicons = {
   'PHP': 'devicon-php-plain',
   'HTML': 'devicon-html5-plain',
   'CSS': 'devicon-css3-plain',
+  'Dart': 'devicon-dart-plain',
+  'C++': 'devicon-cplusplus-plain',
+  'CMake': 'devicon-cmake-plain',
+  'Swift': 'devicon-swift-plain',
 };
