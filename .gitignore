@@ -1,0 +1,12 @@
+node_modules
+dist
+.DS_Store
+*.log
+.env
+.env.*
+
+# Local reference only – CV source files, not for repo
+references/
+
+# Local media source (built assets are in public/media)
+media/
