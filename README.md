@@ -1,6 +1,6 @@
 # s0ul3r.github.io
 
-Portfolio / CV site — **https://s0ul3r.github.io/**
+Portfolio / CV site — [**https://s0ul3r.github.io/**](https://s0ul3r.github.io/)
 
 ## Run locally
 
