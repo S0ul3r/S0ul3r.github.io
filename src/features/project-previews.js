@@ -2,7 +2,55 @@ import { buildYouTubeEmbedUrl } from '../utils/youtube.js';
 
 const THUMB_MAX_WIDTH = 720;
 const THUMB_MAX_HEIGHT = 580;
+/** Delay before hiding when pointer leaves a card (moving to empty space). */
 const HOVER_CLEAR_DELAY_MS = 500;
+/** After closing another card’s preview, wait this long before opening the new one (ms). */
+const PREVIEW_SWITCH_STAGGER_MS = 95;
+/** Inline transition when swapping cards so the old preview clears quickly. */
+const PREVIEW_QUICK_HIDE_MS = 0.13;
+
+/** Class toggled on the whole card so preview CSS does not rely on `:hover` on `<article>`. */
+const PREVIEW_HOVER_CLASS = 'is-project-preview-hover';
+
+/** @type {WeakMap<HTMLElement, number>} */
+const pendingHideByCard = new WeakMap();
+
+/**
+ * @param {HTMLElement} card
+ */
+function clearPendingHide(card) {
+  const id = pendingHideByCard.get(card);
+  if (id != null) {
+    globalThis.clearTimeout(id);
+    pendingHideByCard.delete(card);
+  }
+}
+
+/**
+ * @param {HTMLElement} card
+ * @param {{ quick?: boolean }} [options]
+ */
+function forceHidePreviewCard(card, options = {}) {
+  const quick = options.quick === true;
+  clearPendingHide(card);
+
+  const preview = card.querySelector('.project-thumb-preview');
+  if (quick && preview instanceof HTMLElement) {
+    const prevTransition = preview.style.transitionDuration;
+    preview.style.transitionDuration = `${PREVIEW_QUICK_HIDE_MS}s`;
+    card.classList.remove(PREVIEW_HOVER_CLASS);
+    globalThis.setTimeout(() => {
+      preview.style.transitionDuration = prevTransition;
+    }, Math.ceil(PREVIEW_QUICK_HIDE_MS * 1000) + 80);
+  } else {
+    card.classList.remove(PREVIEW_HOVER_CLASS);
+  }
+
+  const iframe = card.querySelector('iframe.project-preview-iframe');
+  if (iframe instanceof HTMLIFrameElement) {
+    iframe.removeAttribute('src');
+  }
+}
 
 /**
  * Sets CSS size variables on project thumbnail links for hover preview sizing.
@@ -32,9 +80,11 @@ export function initProjectThumbDimensions(root = document) {
 }
 
 /**
- * Lazy-load YouTube iframe on hover/focus for project cards (muted autoplay).
+ * Whole-card hover/focus preview: toggles a class on `.card-project--with-preview` and
+ * loads a muted YouTube iframe when the card has `data-youtube-hover`.
+ * When moving between cards, the previous preview is closed first (quick fade), then the new one opens after a short stagger.
  */
-export function initProjectYouTubeHoverPreviews(root = document) {
+export function initProjectCardPreviewHover(root = document) {
   const embedUrl = (videoId) =>
     buildYouTubeEmbedUrl(videoId, {
       autoplay: 1,
@@ -44,34 +94,68 @@ export function initProjectYouTubeHoverPreviews(root = document) {
       modestbranding: 1,
     });
 
-  root.querySelectorAll('#projects-list .card-project-image[data-youtube-hover]').forEach((link) => {
-    if (!(link instanceof HTMLElement)) return;
+  root.querySelectorAll('#projects-list .card-project--with-preview').forEach((card) => {
+    if (!(card instanceof HTMLElement)) return;
 
-    const videoId = link.dataset.youtubeHover;
-    const iframe = link.querySelector('iframe.project-preview-iframe');
-    if (!videoId || !(iframe instanceof HTMLIFrameElement)) return;
+    const thumbHost = card.querySelector('.card-project-image');
+    if (!(thumbHost instanceof HTMLElement)) return;
 
-    const src = embedUrl(videoId);
-    let hideTimer = 0;
+    const videoId = thumbHost.dataset.youtubeHover;
+    const iframe = card.querySelector('iframe.project-preview-iframe');
+    const src = videoId ? embedUrl(videoId) : '';
+    let showSwitchTimer = 0;
 
-    const start = () => {
-      globalThis.clearTimeout(hideTimer);
-      if (!iframe.getAttribute('src')) {
-        iframe.src = src;
-        iframe.title = 'YouTube video preview';
+    const clearShowSwitch = () => {
+      globalThis.clearTimeout(showSwitchTimer);
+      showSwitchTimer = 0;
+    };
+
+    const show = () => {
+      clearPendingHide(card);
+      clearShowSwitch();
+
+      const list = root.querySelectorAll('#projects-list .card-project--with-preview');
+      let hadOtherActive = false;
+      for (const other of list) {
+        if (other === card || !(other instanceof HTMLElement)) continue;
+        if (other.classList.contains(PREVIEW_HOVER_CLASS)) {
+          hadOtherActive = true;
+          forceHidePreviewCard(other, { quick: true });
+        }
+      }
+
+      const reveal = () => {
+        if (!card.isConnected) return;
+        card.classList.add(PREVIEW_HOVER_CLASS);
+        if (videoId && iframe instanceof HTMLIFrameElement && src && !iframe.getAttribute('src')) {
+          iframe.src = src;
+          iframe.title = 'YouTube video preview';
+        }
+      };
+
+      if (hadOtherActive) {
+        showSwitchTimer = globalThis.setTimeout(reveal, PREVIEW_SWITCH_STAGGER_MS);
+      } else {
+        reveal();
       }
     };
 
-    const stop = () => {
-      globalThis.clearTimeout(hideTimer);
-      hideTimer = globalThis.setTimeout(() => {
-        iframe.removeAttribute('src');
+    const hide = () => {
+      clearShowSwitch();
+      clearPendingHide(card);
+      const id = globalThis.setTimeout(() => {
+        pendingHideByCard.delete(card);
+        forceHidePreviewCard(card, { quick: false });
       }, HOVER_CLEAR_DELAY_MS);
+      pendingHideByCard.set(card, id);
     };
 
-    link.addEventListener('mouseenter', start);
-    link.addEventListener('mouseleave', stop);
-    link.addEventListener('focusin', start);
-    link.addEventListener('focusout', stop);
+    card.addEventListener('mouseenter', show);
+    card.addEventListener('mouseleave', hide);
+    thumbHost.addEventListener('focusin', show);
+    thumbHost.addEventListener('focusout', hide);
   });
 }
+
+/** @deprecated Use initProjectCardPreviewHover */
+export const initProjectYouTubeHoverPreviews = initProjectCardPreviewHover;

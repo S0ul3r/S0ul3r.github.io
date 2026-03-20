@@ -102,8 +102,10 @@ export function buildProjectsHtml(cv, devicons, { escapeHtml, extractYouTubeVide
         }
       }
 
+      const cardMod = imageSrc ? ' card-project--with-preview' : '';
+
       return `
-  <article class="card card-project reveal">
+  <article class="card card-project reveal${cardMod}">
     ${imageHtml}
     <div class="card-project-body">
       <h3 class="card-title">

@@ -4,7 +4,7 @@ import { initParticles, updateMouse } from './particles.js';
 import { escapeHtml } from './utils/html.js';
 import { extractYouTubeVideoId } from './utils/youtube.js';
 import { mountPortfolioView } from './render/mountPortfolio.js';
-import { initProjectThumbDimensions, initProjectYouTubeHoverPreviews } from './features/project-previews.js';
+import { initProjectThumbDimensions, initProjectCardPreviewHover } from './features/project-previews.js';
 import { initYouTubeVideoModal } from './features/youtube-video-modal.js';
 import { runHeroTypingAnimation } from './features/hero-typing.js';
 import { initRevealOnScroll } from './features/reveal-on-scroll.js';
@@ -36,7 +36,7 @@ function bootstrap() {
   mountPortfolioView(cv, devicons, { escapeHtml, extractYouTubeVideoId });
 
   initProjectThumbDimensions();
-  initProjectYouTubeHoverPreviews();
+  initProjectCardPreviewHover();
 
   initYouTubeVideoModal();
 
