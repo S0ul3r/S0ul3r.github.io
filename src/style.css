@@ -385,6 +385,10 @@ body:hover .mouse-glow {
 }
 
 .project-thumb-preview {
+  --preview-fade-opacity: 0.9;
+  --preview-fade-ms: 0.85s;
+  --preview-fade-ease: cubic-bezier(0.22, 0.65, 0.32, 1);
+
   --preview-popout-left: max(5rem, env(safe-area-inset-left, 0px));
   --preview-popout-max-w: min(
     680px,
@@ -408,10 +412,11 @@ body:hover .mouse-glow {
   transform: translate3d(-16px, -50%, 0) scale(0.94);
   transform-origin: center left;
   transition:
-    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.32s step-end,
-    border-color 0.2s ease;
+    opacity var(--preview-fade-ms) var(--preview-fade-ease),
+    transform 0.78s var(--preview-fade-ease),
+    visibility 0s linear var(--preview-fade-ms),
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
 img.project-thumb-preview {
@@ -446,15 +451,20 @@ img.project-thumb-preview {
 
 .card-project-image:hover .project-thumb-preview,
 .card-project-image:focus-visible .project-thumb-preview {
-  opacity: 1;
+  opacity: var(--preview-fade-opacity);
   visibility: visible;
   transform: translate3d(0, -50%, 0) scale(1);
   border-color: var(--accent);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(100, 255, 218, 0.1),
+    0 0 36px rgba(88, 166, 255, 0.1);
   transition:
-    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--preview-fade-ms) var(--preview-fade-ease),
+    transform 0.78s var(--preview-fade-ease),
     visibility 0s step-start,
-    border-color 0.2s ease;
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
 .card-project-image:focus-visible {
@@ -465,6 +475,7 @@ img.project-thumb-preview {
 @media (prefers-reduced-motion: reduce) {
   .project-thumb-preview {
     transition-duration: 0.01ms;
+    transition-delay: 0s !important;
   }
 
   .project-thumb-small {
@@ -478,6 +489,7 @@ img.project-thumb-preview {
 
   .card-project-image:hover .project-thumb-preview,
   .card-project-image:focus-visible .project-thumb-preview {
+    opacity: 1;
     transform: translate3d(0, -50%, 0) scale(1);
   }
 }
