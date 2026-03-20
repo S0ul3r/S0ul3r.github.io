@@ -72,6 +72,14 @@ export const cv = {
       image: '/media/Bober-macro-maker.png',
     },
     {
+      name: 'boberwrapped',
+      website: 'https://github.com/S0ul3r/boberwrapped',
+      description:
+        'Spotify “wrapped” style app: top artists/tracks/genres, mood radar, recently played, and playlist browser using Spotify Web API + OAuth PKCE.',
+      tags: ['TypeScript'],
+      image: '/media/boberwrapped.png',
+    },
+    {
       name: 'Min spendings',
       website: 'https://github.com/S0ul3r/min_spendings',
       description: 'Mobile application for android and iOS to track your monthly spendings, so you have better overview how much and on what you are spending your money.',

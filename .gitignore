@@ -9,4 +9,4 @@ dist
 references/
 
 # Local media source (built assets are in public/media)
-media/
+/media/
