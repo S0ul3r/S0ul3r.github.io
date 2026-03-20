@@ -8,6 +8,12 @@ function esc(text) {
   return d.innerHTML;
 }
 
+function youtubeIdFromUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|watch\?[^#]*v=))([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
 function iconFor(keyword) {
   const cls = devicons[keyword];
   return cls ? `<i class="${cls} colored"></i>` : '';
@@ -70,9 +76,23 @@ document.getElementById('projects-list').innerHTML = cv.projects
   .map((p) => {
     const imageLink = p.videoUrl || p.website;
     const imageSrc = p.image ? esc(p.image) : '';
+    const ytId = youtubeIdFromUrl(p.videoUrl);
+    const ytAttr = ytId ? ` data-youtube-hover="${esc(ytId)}"` : '';
+    const previewHtml = ytId
+      ? `<div class="project-thumb-preview project-thumb-preview--yt" aria-hidden="true">
+          <iframe
+            class="project-preview-iframe"
+            title=""
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>`
+      : `<img class="project-thumb-preview" src="${imageSrc}" alt="" aria-hidden="true" loading="lazy" decoding="async" />`;
     const imageHtml = imageSrc
-      ? `<a href="${esc(imageLink)}" target="_blank" rel="noopener" class="card-project-image">
-          <img src="${imageSrc}" alt="${esc(p.name)}" loading="lazy" />
+      ? `<a href="${esc(imageLink)}" target="_blank" rel="noopener" class="card-project-image${ytId ? ' card-project-image--yt' : ''}" title="${esc(p.name)}"${ytAttr}>
+          <img class="project-thumb project-thumb-small" src="${imageSrc}" alt="${esc(p.name)}" loading="lazy" decoding="async" />
+          ${previewHtml}
         </a>`
       : '';
 
@@ -91,6 +111,62 @@ document.getElementById('projects-list').innerHTML = cv.projects
   </article>`;
   })
   .join('');
+
+const projectThumbImgs = document.querySelectorAll(
+  '#projects-list .card-project-image img.project-thumb-small'
+);
+projectThumbImgs.forEach((img) => {
+  const parent = img.parentElement;
+  const setVars = () => {
+    if (parent?.hasAttribute('data-youtube-hover')) return;
+
+    const nw = img.naturalWidth || img.width;
+    const nh = img.naturalHeight || img.height;
+    if (!nw || !nh) return;
+
+    const maxW = 720;
+    const maxH = 580;
+    const scale = Math.min(maxW / nw, maxH / nh, 1);
+
+    parent.style.setProperty('--img-w', `${Math.round(nw * scale)}px`);
+    parent.style.setProperty('--img-h', `${Math.round(nh * scale)}px`);
+  };
+
+  if (img.complete) setVars();
+  img.addEventListener('load', setVars, { once: true });
+});
+
+document.querySelectorAll('#projects-list .card-project-image[data-youtube-hover]').forEach((link) => {
+  const id = link.getAttribute('data-youtube-hover');
+  const iframe = link.querySelector('iframe.project-preview-iframe');
+  if (!id || !iframe) return;
+
+  // Standard youtube.com embed: fewer blockers than youtube-nocookie; mute+playsinline required for autoplay
+  const embedUrl =
+    `https://www.youtube.com/embed/${encodeURIComponent(id)}` +
+    '?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
+
+  let hideTimer = 0;
+  const startPreview = () => {
+    window.clearTimeout(hideTimer);
+    if (!iframe.getAttribute('src')) {
+      iframe.src = embedUrl;
+      iframe.title = 'YouTube video preview';
+    }
+  };
+  const stopPreview = () => {
+    window.clearTimeout(hideTimer);
+    // Delay clearing so brief pointer moves (fixed preview vs <a> hit area) don't unload before first paint
+    hideTimer = window.setTimeout(() => {
+      iframe.removeAttribute('src');
+    }, 500);
+  };
+
+  link.addEventListener('mouseenter', startPreview);
+  link.addEventListener('mouseleave', stopPreview);
+  link.addEventListener('focusin', startPreview);
+  link.addEventListener('focusout', stopPreview);
+});
 
 document.getElementById('skills-list').innerHTML = cv.skills
   .map(

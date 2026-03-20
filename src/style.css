@@ -260,14 +260,13 @@ body:hover .mouse-glow {
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius);
-  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
 .card:hover {
   background: var(--bg-card);
   border-color: var(--border);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
 }
 
 .card-inner {
@@ -356,29 +355,131 @@ body:hover .mouse-glow {
 }
 
 .card-project-image {
+  display: block;
   width: 120px;
   height: 80px;
   border-radius: 6px;
   overflow: hidden;
+  position: relative;
   border: 2px solid var(--border);
   flex-shrink: 0;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.card:hover .card-project-image {
+.card-project-image:hover {
   border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(100, 255, 218, 0.12);
 }
 
-.card-project-image img {
+.project-thumb-small {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s;
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
-.card:hover .card-project-image img {
-  transform: scale(1.05);
+.card-project-image:hover .project-thumb-small,
+.card-project-image:focus-visible .project-thumb-small {
+  transform: scale(1.06);
+}
+
+.project-thumb-preview {
+  --preview-popout-left: max(5rem, env(safe-area-inset-left, 0px));
+  --preview-popout-max-w: min(
+    680px,
+    calc(100vw - var(--preview-popout-left) - max(0.75rem, env(safe-area-inset-right, 0px)) - 0.5rem)
+  );
+
+  position: fixed;
+  left: var(--preview-popout-left);
+  right: auto;
+  top: 50%;
+  margin: 0;
+  z-index: 200;
+  max-width: var(--preview-popout-max-w);
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(100, 255, 218, 0.08);
+  background: var(--bg-card);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(-16px, -50%, 0) scale(0.94);
+  transform-origin: center left;
+  transition:
+    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.32s step-end,
+    border-color 0.2s ease;
+}
+
+img.project-thumb-preview {
+  width: auto;
+  height: auto;
+  max-width: min(var(--img-w, 520px), var(--preview-popout-max-w));
+  max-height: min(var(--img-h, 580px), 78vh);
+  display: block;
+}
+
+.project-thumb-preview.project-thumb-preview--yt {
+  display: block;
+  width: min(640px, var(--preview-popout-max-w));
+  max-width: var(--preview-popout-max-w);
+  aspect-ratio: 16 / 9;
+  min-height: 11.25rem;
+  max-height: 78vh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.project-preview-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #000;
+  pointer-events: none;
+}
+
+.card-project-image:hover .project-thumb-preview,
+.card-project-image:focus-visible .project-thumb-preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translate3d(0, -50%, 0) scale(1);
+  border-color: var(--accent);
+  transition:
+    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s step-start,
+    border-color 0.2s ease;
+}
+
+.card-project-image:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-thumb-preview {
+    transition-duration: 0.01ms;
+  }
+
+  .project-thumb-small {
+    transition-duration: 0.01ms;
+  }
+
+  .card-project-image:hover .project-thumb-small,
+  .card-project-image:focus-visible .project-thumb-small {
+    transform: none;
+  }
+
+  .card-project-image:hover .project-thumb-preview,
+  .card-project-image:focus-visible .project-thumb-preview {
+    transform: translate3d(0, -50%, 0) scale(1);
+  }
 }
 
 .card-project-body {
@@ -541,13 +642,11 @@ body:hover .mouse-glow {
 
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.6s ease;
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
@@ -621,5 +720,32 @@ body:hover .mouse-glow {
   .card-project-image {
     width: 100px;
     height: 68px;
+  }
+
+  .project-thumb-preview {
+    --preview-popout-left: max(3rem, env(safe-area-inset-left, 0px));
+    --preview-popout-max-w: calc(100vw - var(--preview-popout-left) - 1rem);
+
+    left: var(--preview-popout-left);
+    right: auto;
+    max-width: var(--preview-popout-max-w);
+    transform: translate3d(-10px, -50%, 0) scale(0.94);
+    transform-origin: center left;
+  }
+
+  img.project-thumb-preview {
+    max-width: min(var(--img-w, 480px), var(--preview-popout-max-w));
+    max-height: min(var(--img-h, 480px), 65vh);
+  }
+
+  .card-project-image:hover .project-thumb-preview,
+  .card-project-image:focus-visible .project-thumb-preview {
+    transform: translate3d(0, -50%, 0) scale(1);
+  }
+
+  .project-thumb-preview.project-thumb-preview--yt {
+    width: min(100%, var(--preview-popout-max-w));
+    min-height: 10rem;
+    max-height: min(60vh, 380px);
   }
 }
