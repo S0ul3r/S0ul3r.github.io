@@ -45,7 +45,7 @@ export const cv = {
       location: 'Poland',
       period: '2019',
       website: 'https://zoneit.pl/',
-      description: "Developed a website and handled it's database for a hospital in Zurich using Laravel 5 with PHP, JS, HTML/CSS, MySQL.",
+      description: 'Developed a website and handled its database for a hospital in Zurich using Laravel 5 with PHP, JS, HTML/CSS, MySQL.',
       tags: ['PHP', 'Laravel', 'JavaScript', 'MySQL', 'HTML', 'CSS'],
     },
     {
