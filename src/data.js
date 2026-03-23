@@ -80,6 +80,14 @@ export const cv = {
       image: '/media/boberwrapped.png',
     },
     {
+      name: 'BoberInSpire',
+      website: 'https://github.com/S0ul3r/BoberInSpire',
+      description:
+        'Hybrid C# + Python assistant for Slay the Spire 2: a C# mod exports combat and reward state to JSON; a Python overlay shows real-time damage/block summaries, relic info, and card-pick advice (Mobalytics tiers + deck heuristics) in a semi-transparent always-on-top window.',
+      tags: ['C#', 'Python'],
+      image: '/media/BoberInSpire.png',
+    },
+    {
       name: 'Min spendings',
       website: 'https://github.com/S0ul3r/min_spendings',
       description: 'Mobile application for android and iOS to track your monthly spendings, so you have better overview how much and on what you are spending your money.',
