@@ -65,6 +65,22 @@ export const cv = {
   ],
   projects: [
     {
+      name: 'TangoDJ',
+      website: 'https://tango-dj.vercel.app/library',
+      description:
+        'Milonga desk for Argentine tango DJs: organize tango / vals / milonga / cortina libraries into tandas and night queues, with Spotify Connect or local file playback and Supabase sync.',
+      tags: ['Next.js', 'React', 'TypeScript', 'Supabase', 'Tailwind'],
+      image: '/media/TangoDJ.png',
+    },
+    {
+      name: 'CoinFlipWeb',
+      website: 'https://coinflip-collect.vercel.app/',
+      description:
+        'Collection-first PWA for Polish commemorative coins: catalog browse, personal collection, wishlist, series tracking, and photo-based coin identification (PL/EN).',
+      tags: ['React', 'TypeScript', 'Vite', 'Supabase', 'PWA'],
+      image: '/media/CoinFlipWeb.png',
+    },
+    {
       name: 'Macro execute and recorder',
       website: 'https://github.com/S0ul3r/Bober-macro-maker',
       description: 'Macro automation tool, mainly for the game "Where Winds Meet". Create custom macros to cast combos that can be used in game.',
@@ -150,6 +166,11 @@ export const devicons = {
   '.NET Core': 'devicon-dotnetcore-plain',
   'React': 'devicon-react-original',
   'React Native': 'devicon-react-original',
+  'Next.js': 'devicon-nextjs-plain',
+  'Vite': 'devicon-vitejs-plain',
+  'Supabase': 'devicon-supabase-plain',
+  'Tailwind': 'devicon-tailwindcss-plain',
+  'PWA': 'devicon-chrome-plain',
   'Laravel': 'devicon-laravel-original',
   'Azure': 'devicon-azure-plain',
   'Azure DevOps': 'devicon-azure-plain',
