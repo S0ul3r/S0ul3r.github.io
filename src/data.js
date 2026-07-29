@@ -65,6 +65,14 @@ export const cv = {
   ],
   projects: [
     {
+      name: 'PolishTango',
+      website: 'https://polishtango.vercel.app/',
+      description:
+        'Public milonga calendar for Poland: month/week/list views, voivodeship filters, and a trusted-editor admin for reviewing and publishing events.',
+      tags: ['Next.js', 'React', 'TypeScript', 'Neon', 'Tailwind'],
+      image: '/media/PolishTango.png',
+    },
+    {
       name: 'TangoDJ',
       website: 'https://tango-dj.vercel.app/library',
       description:
@@ -169,6 +177,7 @@ export const devicons = {
   'Next.js': 'devicon-nextjs-plain',
   'Vite': 'devicon-vitejs-plain',
   'Supabase': 'devicon-supabase-plain',
+  'Neon': 'devicon-postgresql-plain',
   'Tailwind': 'devicon-tailwindcss-plain',
   'PWA': 'devicon-chrome-plain',
   'Laravel': 'devicon-laravel-original',
