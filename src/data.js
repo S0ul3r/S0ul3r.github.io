@@ -9,7 +9,7 @@ export const cv = {
     linkedin: { url: 'https://www.linkedin.com/in/jakub-k-977216129/', label: 'LinkedIn' },
   },
   summary: {
-    content: 'Full-stack developer with 4+ years of commercial experience in building and maintaining scalable microservices using C#/.NET Core, TypeScript, and React. Scrum Master leading a team of 5 developers in Agile/Scrum environments. Strong background in CI/CD, cloud solutions (Azure), and multi-database architectures. Passionate about clean code, automation, and delivering business value.',
+    content: 'Full-stack developer with 4+ years of commercial experience in building and maintaining scalable microservices using C#/.NET Core, TypeScript, and React. Scrum Master leading a team of 5 developers in Agile/Scrum environments. Strong background in CI/CD, cloud solutions (Azure), and multi-database architectures. Owner of PolishTango.com — a platform focused on Argentine tango events across Poland. Passionate about clean code, automation, and delivering business value.',
   },
   nav: [
     { label: 'Experience', href: '#experience' },
@@ -66,9 +66,9 @@ export const cv = {
   projects: [
     {
       name: 'PolishTango',
-      website: 'https://polishtango.vercel.app/',
+      website: 'https://polishtango.com/',
       description:
-        'Public milonga calendar for Poland: month/week/list views, voivodeship filters, and a trusted-editor admin for reviewing and publishing events.',
+        'Owner of PolishTango.com — a public milonga calendar for tango events across Poland, with month/week/list views, voivodeship filters, and a trusted-editor admin for reviewing and publishing events.',
       tags: ['Next.js', 'React', 'TypeScript', 'Neon', 'Tailwind'],
       image: '/media/PolishTango.png',
     },
