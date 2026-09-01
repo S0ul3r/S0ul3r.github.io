@@ -68,7 +68,7 @@ export const cv = {
       name: 'PolishTango',
       website: 'https://polishtango.com/',
       description:
-        'Owner of PolishTango.com — a public milonga calendar for tango events across Poland, with month/week/list views, voivodeship filters, and a trusted-editor admin for reviewing and publishing events.',
+        'Owner of PolishTango.com, a public milonga calendar for tango events across Poland, with month/week/list views, voivodeship filters, and a trusted-editor admin for reviewing and publishing events.',
       tags: ['Next.js', 'React', 'TypeScript', 'Neon', 'Tailwind'],
       image: '/media/PolishTango.png',
     },
