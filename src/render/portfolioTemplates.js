@@ -117,7 +117,7 @@ export function buildExperience(cv, { escapeHtml }) {
 export function buildServices(cv, { escapeHtml }) {
   return (cv.services || [])
     .map(
-      (s) => `<article class="service-card">
+      (s) => `<article class="service-card reveal">
         <i class="ph ph-${escapeHtml(s.icon)}" aria-hidden="true"></i>
         <h3>${escapeHtml(s.title)}</h3>
         <p>${escapeHtml(s.body)}</p>
@@ -149,10 +149,11 @@ export function buildCarousel(cv, tagHue, { escapeHtml, extractYouTubeVideoId })
           ? `<button type="button" data-youtube-modal data-youtube-id="${escapeHtml(ytId)}" data-video-title="${escapeHtml(p.name)}" aria-label="Play video"><i class="ph ph-youtube-logo"></i></button>`
           : '',
       ].join('');
-      return `<article class="slab" data-index="${index}">
+      const imageClass = p.imageFit === 'contain' ? ' slab-image-contain' : '';
+      return `<article class="slab" data-index="${index}" aria-label="View ${escapeHtml(p.name)} project">
         <div class="slab-frame">
           <div class="slab-face slab-face-front">
-            ${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" />` : ''}
+            ${p.image ? `<img class="${imageClass.trim()}" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" />` : ''}
           </div>
           <div class="slab-face slab-face-left"></div>
           <div class="slab-face slab-face-right"></div>

@@ -162,6 +162,7 @@ export const cv = {
       description: 'Mobile application for android and iOS to track your monthly spendings, so you have better overview how much and on what you are spending your money.',
       tags: ['React Native', 'TypeScript'],
       image: '/media/min_spendings.png',
+      imageFit: 'contain',
     },
     {
       name: 'World of Warcraft rotations',

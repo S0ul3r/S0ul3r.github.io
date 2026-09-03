@@ -26,6 +26,7 @@ import { initAmbientAudio } from './features/ambient-audio.js';
 import { initCursorOrb } from './features/cursor-orb.js';
 import { initContactForm } from './features/contact-form.js';
 import { seedBinaryField } from './features/binary-field.js';
+import { initRevealOnScroll } from './features/reveal-on-scroll.js';
 import { initWorld } from './scene/world.js';
 
 function bootstrap() {
@@ -33,6 +34,7 @@ function bootstrap() {
   globalThis.scrollTo(0, 0);
   mountPortfolioView(cv, devicons, tagHue, { escapeHtml, extractYouTubeVideoId });
   seedBinaryField();
+  initRevealOnScroll();
   initTabs();
   initProjectCarousel();
   initYouTubeVideoModal();

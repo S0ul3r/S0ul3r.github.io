@@ -18,8 +18,10 @@ export function initProjectCarousel(root = document) {
       const rot = offset * -18;
       const z = -abs * 180;
       item.classList.toggle('is-active', abs === 0);
+      item.dataset.carouselPosition = offset < 0 ? 'previous' : offset > 0 ? 'next' : 'active';
       item.style.opacity = abs > 1 ? '0' : String(1 - abs * 0.28);
-      item.style.pointerEvents = abs === 0 ? 'auto' : 'none';
+      item.style.pointerEvents = abs <= 1 ? 'auto' : 'none';
+      item.style.cursor = abs === 1 ? 'pointer' : 'default';
       item.style.zIndex = String(20 - abs);
       item.style.transform = `translateX(${x}vw) rotateY(${rot}deg) translateZ(${z}px)`;
     });
@@ -42,6 +44,14 @@ export function initProjectCarousel(root = document) {
   });
   document.getElementById('carousel-next')?.addEventListener('click', () => {
     go(1);
+  });
+
+  items.forEach((item, itemIndex) => {
+    item.addEventListener('click', () => {
+      if (itemIndex === index) return;
+      index = itemIndex;
+      layout();
+    });
   });
 
   const zone = carousel instanceof HTMLElement ? carousel : section;

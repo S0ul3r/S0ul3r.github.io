@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { fbm } from './noise.js';
 
 const CAMERAS = [
@@ -27,94 +28,102 @@ function glowTexture() {
   return tex;
 }
 
-/**
- * Low-poly rearing horse assembled from wireframe primitives.
- * Nickname: horse — side view facing +X.
- */
-function makeHorse() {
+function smoothstep(edge0, edge1, value) {
+  const x = THREE.MathUtils.clamp((value - edge0) / (edge1 - edge0), 0, 1);
+  return x * x * (3 - 2 * x);
+}
+
+function presenceWindow(value, enterStart, enterEnd, exitStart = 1, exitEnd = 1) {
+  return smoothstep(enterStart, enterEnd, value) * (1 - smoothstep(exitStart, exitEnd, value));
+}
+
+/** Load the supplied Blender horse and build its luminous low-poly treatment. */
+async function makeHorse() {
+  const gltf = await new GLTFLoader().loadAsync('/media/horse.glb');
+  const source = gltf.scene.getObjectByProperty('type', 'Mesh');
+  if (!(source instanceof THREE.Mesh)) throw new Error('Horse model does not contain a mesh.');
+
+  source.updateWorldMatrix(true, false);
+  const geometry = source.geometry.clone();
+  geometry.applyMatrix4(source.matrixWorld);
+  geometry.rotateY(Math.PI / 2);
+  geometry.center();
+  geometry.computeBoundingBox();
+  const size = geometry.boundingBox.getSize(new THREE.Vector3());
+  const modelScale = 5.35 / size.y;
+  geometry.scale(modelScale, modelScale, modelScale);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+
   const group = new THREE.Group();
-  const mat = new THREE.MeshBasicMaterial({
-    color: 0xf2f2f2,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.85,
-  });
-  const nodeMat = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.05,
-    transparent: true,
-    opacity: 0.95,
-    sizeAttenuation: true,
-  });
+  const fill = new THREE.Mesh(
+    geometry,
+    new THREE.MeshStandardMaterial({
+      color: 0x9ca3a8,
+      emissive: 0x111315,
+      roughness: 0.76,
+      metalness: 0.14,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.24,
+      side: THREE.DoubleSide,
+    })
+  );
+  group.add(fill);
 
-  const addWire = (geo, x, y, z, sx = 1, sy = 1, sz = 1, rx = 0, ry = 0, rz = 0) => {
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(x, y, z);
-    mesh.scale.set(sx, sy, sz);
-    mesh.rotation.set(rx, ry, rz);
-    group.add(mesh);
-    const pts = new THREE.Points(geo, nodeMat);
-    pts.position.copy(mesh.position);
-    pts.scale.copy(mesh.scale);
-    pts.rotation.copy(mesh.rotation);
-    group.add(pts);
-  };
+  const wire = new THREE.LineSegments(
+    new THREE.WireframeGeometry(geometry),
+    new THREE.LineBasicMaterial({
+      color: 0xf2f2f2,
+      transparent: true,
+      opacity: 0.42,
+    })
+  );
+  group.add(wire);
 
-  // Barrel / torso
-  addWire(new THREE.SphereGeometry(0.85, 10, 8), 0.1, 0.35, 0, 1.35, 0.85, 0.7);
-  // Chest
-  addWire(new THREE.SphereGeometry(0.55, 8, 6), 0.95, 0.55, 0, 1.1, 1, 0.85);
-  // Neck
-  addWire(new THREE.CylinderGeometry(0.22, 0.32, 1.15, 7), 1.45, 1.25, 0, 1, 1, 1, 0, 0, -0.85);
-  // Head
-  addWire(new THREE.SphereGeometry(0.38, 8, 6), 2.05, 1.95, 0, 1.35, 0.75, 0.7, 0, 0, -0.35);
-  // Snout
-  addWire(new THREE.ConeGeometry(0.22, 0.55, 6), 2.55, 1.85, 0, 1, 1, 0.85, 0, 0, -1.45);
-  // Ears
-  addWire(new THREE.ConeGeometry(0.1, 0.32, 4), 1.95, 2.35, 0.12, 1, 1, 1, 0.2, 0, 0.15);
-  addWire(new THREE.ConeGeometry(0.1, 0.32, 4), 1.95, 2.35, -0.12, 1, 1, 1, -0.2, 0, 0.15);
-  // Mane ridge
-  addWire(new THREE.BoxGeometry(0.12, 0.9, 0.18), 1.35, 1.55, 0, 1, 1, 1, 0, 0, -0.7);
+  const particleGeometry = geometry.clone();
+  const particlePositions = particleGeometry.attributes.position;
+  const particleBase = Float32Array.from(particlePositions.array);
+  const particleScatter = new Float32Array(particleBase.length);
+  for (let i = 0; i < particlePositions.count; i += 1) {
+    const offset = i * 3;
+    const distance = 0.55 + ((i * 47) % 100) / 42;
+    particleScatter[offset] = Math.sin(i * 12.9898) * distance;
+    particleScatter[offset + 1] = Math.cos(i * 7.233) * distance;
+    particleScatter[offset + 2] = Math.sin(i * 3.771) * distance * 0.72;
+  }
+  const nodes = new THREE.Points(
+    particleGeometry,
+    new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.026,
+      transparent: true,
+      opacity: 0.38,
+      sizeAttenuation: true,
+    })
+  );
+  group.add(nodes);
 
-  // Front legs (raised)
-  addWire(new THREE.CylinderGeometry(0.09, 0.11, 0.7, 6), 1.15, 0.35, 0.22, 1, 1, 1, 0, 0, -1.2);
-  addWire(new THREE.CylinderGeometry(0.07, 0.09, 0.55, 6), 1.55, -0.05, 0.22, 1, 1, 1, 0, 0, -1.55);
-  addWire(new THREE.CylinderGeometry(0.09, 0.11, 0.7, 6), 1.05, 0.3, -0.22, 1, 1, 1, 0, 0, -1.05);
-  addWire(new THREE.CylinderGeometry(0.07, 0.09, 0.55, 6), 1.4, -0.15, -0.22, 1, 1, 1, 0, 0, -1.4);
-
-  // Hind legs (planted)
-  addWire(new THREE.CylinderGeometry(0.12, 0.14, 0.95, 6), -0.55, -0.45, 0.2, 1, 1, 1, 0, 0, 0.35);
-  addWire(new THREE.CylinderGeometry(0.09, 0.11, 0.7, 6), -0.75, -1.15, 0.2, 1, 1, 1, 0, 0, 0.15);
-  addWire(new THREE.CylinderGeometry(0.12, 0.14, 0.95, 6), -0.45, -0.4, -0.2, 1, 1, 1, 0, 0, 0.25);
-  addWire(new THREE.CylinderGeometry(0.09, 0.11, 0.7, 6), -0.6, -1.15, -0.2, 1, 1, 1, 0, 0, 0.1);
-
-  // Hooves
-  addWire(new THREE.BoxGeometry(0.22, 0.12, 0.18), -0.85, -1.55, 0.2);
-  addWire(new THREE.BoxGeometry(0.22, 0.12, 0.18), -0.7, -1.55, -0.2);
-  addWire(new THREE.BoxGeometry(0.18, 0.1, 0.14), 1.7, -0.35, 0.22);
-  addWire(new THREE.BoxGeometry(0.18, 0.1, 0.14), 1.55, -0.45, -0.22);
-
-  // Tail
-  addWire(new THREE.CylinderGeometry(0.05, 0.1, 1.1, 5), -1.15, 0.05, 0, 1, 1, 1, 0, 0, 0.75);
-  addWire(new THREE.ConeGeometry(0.12, 0.45, 5), -1.55, -0.45, 0, 1, 1, 1, 0, 0, 0.4);
-
-  // Soft inner glow in the chest
   const glow = new THREE.Sprite(
     new THREE.SpriteMaterial({
       map: glowTexture(),
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.32,
     })
   );
-  glow.position.set(0.55, 0.7, 0.35);
-  glow.scale.set(1.6, 1.6, 1);
+  const bounds = geometry.boundingBox;
+  glow.position.set(bounds.max.x * 0.78, bounds.max.y * 0.7, 0.5);
+  glow.scale.set(1.15, 1.15, 1);
   group.add(glow);
 
-  group.position.set(-6.0, 1.55, 0);
-  group.scale.set(1.15, 1.15, 1.15);
-  group.rotation.y = 0.55;
+  group.userData.fill = fill;
+  group.userData.wire = wire;
+  group.userData.nodes = nodes;
+  group.userData.glow = glow;
+  group.userData.particleBase = particleBase;
+  group.userData.particleScatter = particleScatter;
   return group;
 }
 
@@ -137,6 +146,15 @@ export function initWorld(canvas) {
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x050505, 0.034);
+
+  const ambientLight = new THREE.HemisphereLight(0xdce5eb, 0x050505, 1.25);
+  scene.add(ambientLight);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.1);
+  keyLight.position.set(-4, 8, 7);
+  scene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(0x9fb6c5, 1.35);
+  rimLight.position.set(6, 2, -8);
+  scene.add(rimLight);
 
   const camera = new THREE.PerspectiveCamera(42, globalThis.innerWidth / globalThis.innerHeight, 0.1, 220);
   camera.position.set(...CAMERAS[0].pos);
@@ -192,15 +210,22 @@ export function initWorld(canvas) {
   sun.scale.set(18, 18, 1);
   scene.add(sun);
 
-  const bust = makeHorse();
-  bust.visible = false;
+  const bust = new THREE.Group();
+  bust.position.set(-5.9, 2.35, 0);
+  bust.rotation.y = 0.08;
+  bust.visible = true;
   scene.add(bust);
-  // Chest glow is built into the horse group; keep a small external accent off.
-  const bulb = new THREE.Sprite(sunMat);
-  bulb.position.set(-5.4, 2.2, 0.6);
-  bulb.scale.set(0.01, 0.01, 1);
-  bulb.visible = false;
-  scene.add(bulb);
+  let horse = null;
+  let horseHitTarget = null;
+  makeHorse()
+    .then((model) => {
+      horse = model;
+      horseHitTarget = model.userData.fill;
+      bust.add(model);
+      updateHorseAppearance(horsePresence, 0);
+      if (reduce) renderer.render(scene, camera);
+    })
+    .catch((error) => console.error('Unable to load horse model.', error));
 
   const crystals = new THREE.Group();
   for (let i = 0; i < 9; i += 1) {
@@ -211,10 +236,11 @@ export function initWorld(canvas) {
     );
     m.position.set((Math.random() - 0.5) * 22, 1.2 + Math.random() * 6, (Math.random() - 0.5) * 16);
     m.userData.spin = 0.12 + Math.random() * 0.25;
+    m.userData.baseScale = 0.78 + Math.random() * 0.42;
+    m.material.opacity = 0;
     crystals.add(m);
     g.dispose();
   }
-  crystals.visible = false;
   scene.add(crystals);
 
   const blobGeo = new THREE.IcosahedronGeometry(2.15, mobile ? 2 : 4);
@@ -225,12 +251,11 @@ export function initWorld(canvas) {
       color: 0xc8c8c8,
       wireframe: true,
       transparent: true,
-      opacity: 0.32,
+      opacity: 0,
     })
   );
   blob.position.set(6.35, 1.65, 1.35);
-  blob.scale.set(1.28, 1.28, 1.28);
-  blob.visible = false;
+  blob.scale.setScalar(0.72);
   scene.add(blob);
 
   const menuOrbGeo = new THREE.IcosahedronGeometry(3.4, mobile ? 2 : 4);
@@ -241,24 +266,23 @@ export function initWorld(canvas) {
       color: 0xe8e8e8,
       wireframe: true,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0,
     })
   );
   menuOrb.position.set(0, 1.3, -1.2);
-  menuOrb.visible = false;
   scene.add(menuOrb);
 
   let composer = null;
   if (!mobile && !reduce && typeof EffectComposer === 'function') {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(
+    const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(globalThis.innerWidth, globalThis.innerHeight),
       0.28,
       0.5,
       0.22
     );
-    composer.addPass(bloom);
+    composer.addPass(bloomPass);
   }
 
   const pointer = { x: 0, y: 0 };
@@ -271,6 +295,13 @@ export function initWorld(canvas) {
   let raf = 0;
   let running = true;
   let menuOpen = false;
+  let horsePresence = 0;
+  let horsePresenceTarget = 0;
+  let crystalPresence = 0;
+  let crystalPresenceTarget = 0;
+  let blobPresence = 0;
+  let blobPresenceTarget = 0;
+  let menuOrbPresence = 0;
 
   function applyProgress(p) {
     progress = Math.max(0, Math.min(1, p));
@@ -292,13 +323,55 @@ export function initWorld(canvas) {
       );
     }
     const live = document.body.classList.contains('is-live');
-    const showBust = live && !menuOpen && progress > 0.12 && progress < 0.55;
-    const showBlob = live && !menuOpen && progress > 0.72;
-    bust.visible = showBust;
-    bulb.visible = showBust;
-    blob.visible = showBlob;
-    crystals.visible = live && !menuOpen && progress > 0.28 && progress < 0.85;
-    menuOrb.visible = live && menuOpen;
+    horsePresenceTarget = live && !menuOpen ? presenceWindow(progress, 0.08, 0.17, 0.47, 0.58) : 0;
+    crystalPresenceTarget = live && !menuOpen ? presenceWindow(progress, 0.24, 0.36, 0.74, 0.88) : 0;
+    blobPresenceTarget = live && !menuOpen ? smoothstep(0.65, 0.78, progress) : 0;
+    if (reduce) {
+      horsePresence = horsePresenceTarget;
+      crystalPresence = crystalPresenceTarget;
+      blobPresence = blobPresenceTarget;
+      menuOrbPresence = live && menuOpen ? 1 : 0;
+      updateHorseAppearance(horsePresence);
+      crystals.children.forEach((crystal) => {
+        crystal.material.opacity = crystalPresence * 0.28;
+        crystal.scale.setScalar(crystal.userData.baseScale * (0.45 + crystalPresence * 0.55));
+      });
+      blob.material.opacity = blobPresence * 0.32;
+      blob.scale.setScalar(0.72 + blobPresence * 0.56);
+      menuOrb.material.opacity = menuOrbPresence * 0.22;
+      menuOrb.scale.setScalar(0.72 + menuOrbPresence * 0.28);
+      renderer.render(scene, camera);
+    }
+  }
+
+  function updateHorseAppearance(presence) {
+    if (!horse) return;
+    const fill = horse.userData.fill;
+    const wire = horse.userData.wire;
+    const nodes = horse.userData.nodes;
+    const glow = horse.userData.glow;
+    fill.material.opacity = presence * 0.24;
+    wire.material.opacity = presence * 0.42;
+    nodes.material.opacity = Math.min(1, presence * 0.38 + (1 - presence) * presence * 1.8);
+    glow.material.opacity = presence * 0.32;
+    glow.scale.set(1.15, 1.15, 1);
+    horse.scale.setScalar(0.9 + presence * 0.1);
+    horse.visible = presence > 0.002;
+
+    const positions = nodes.geometry.attributes.position;
+    const base = horse.userData.particleBase;
+    const scatter = horse.userData.particleScatter;
+    const spread = Math.pow(1 - presence, 1.7);
+    for (let i = 0; i < positions.count; i += 1) {
+      const offset = i * 3;
+      positions.setXYZ(
+        i,
+        base[offset] + scatter[offset] * spread,
+        base[offset + 1] + scatter[offset + 1] * spread,
+        base[offset + 2] + scatter[offset + 2] * spread
+      );
+    }
+    positions.needsUpdate = true;
   }
 
   function resize() {
@@ -314,6 +387,22 @@ export function initWorld(canvas) {
     if (!running) return;
     raf = globalThis.requestAnimationFrame(tick);
     const t = clock.getElapsedTime();
+    horsePresence += (horsePresenceTarget - horsePresence) * 0.065;
+    crystalPresence += (crystalPresenceTarget - crystalPresence) * 0.055;
+    blobPresence += (blobPresenceTarget - blobPresence) * 0.05;
+    const menuTarget = document.body.classList.contains('is-live') && menuOpen ? 1 : 0;
+    menuOrbPresence += (menuTarget - menuOrbPresence) * 0.07;
+
+    updateHorseAppearance(horsePresence);
+
+    crystals.children.forEach((crystal) => {
+      crystal.material.opacity = crystalPresence * 0.28;
+      crystal.scale.setScalar(crystal.userData.baseScale * (0.45 + crystalPresence * 0.55));
+    });
+    blob.material.opacity = blobPresence * 0.32;
+    blob.scale.setScalar(0.72 + blobPresence * 0.56);
+    menuOrb.material.opacity = menuOrbPresence * 0.22;
+    menuOrb.scale.setScalar(0.72 + menuOrbPresence * 0.28);
 
     if (!reduce) {
       camPos.lerp(targetPos, 0.06);
@@ -328,7 +417,7 @@ export function initWorld(canvas) {
       }
       pos.needsUpdate = true;
 
-      bust.rotation.y = Math.sin(t * 0.25) * 0.35 + pointer.x * 0.4;
+      bust.rotation.y = Math.sin(t * 0.25) * 0.18 + pointer.x * 0.24;
       crystals.children.forEach((c) => {
         c.rotation.y += 0.003 * c.userData.spin;
         c.rotation.x += 0.002 * c.userData.spin;
