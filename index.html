@@ -5,73 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Jakub Kulewicz - Software Developer and Scrum Master. Full-stack developer with 4+ years experience in C#/.NET, TypeScript, React." />
   <title>Jakub Kulewicz | Software Engineer & Scrum Master</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/icon.png" />
   <link href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" rel="stylesheet" />
 </head>
-<body>
-  <div id="mouse-glow" class="mouse-glow"></div>
+<body class="is-booting">
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div class="film-grain" aria-hidden="true"></div>
+  <div class="binary-field" id="binary-field" aria-hidden="true"></div>
 
-  <div class="layout">
-    <header class="sidebar">
-      <div class="sidebar-inner">
-        <div class="sidebar-top">
-          <h1 class="hero-name" id="hero-name">
-            <span class="sr-only">Jakub Kulewicz</span>
-            <span id="hero-name-visible" aria-hidden="true"></span>
-          </h1>
-          <p class="hero-headline" id="hero-headline"></p>
-          <p class="hero-summary" id="hero-summary"></p>
-        </div>
+  <button type="button" class="sound-hint" id="sound-hint">
+    <span class="sound-hint-orb"></span>
+    Click to enable sound
+  </button>
 
-        <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  <header class="chrome" id="chrome">
+    <button type="button" class="eq" id="eq-toggle" aria-pressed="false" aria-label="Toggle ambient sound">
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+      <span class="eq-bar"></span>
+    </button>
+    <button type="button" class="burger" id="menu-toggle" aria-expanded="false" aria-controls="overlay-menu" aria-label="Open menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
 
-        <div class="sidebar-social" id="sidebar-social"></div>
-      </div>
-    </header>
+  <nav class="dots" id="dots" aria-label="Sections"></nav>
 
-    <main class="content" id="content">
-      <section class="section" id="experience">
-        <h2 class="section-title">Experience</h2>
-        <div class="section-body" id="experience-list"></div>
-      </section>
-
-      <section class="section" id="projects">
-        <h2 class="section-title">Projects</h2>
-        <div class="section-body grid" id="projects-list"></div>
-      </section>
-
-      <section class="section" id="skills">
-        <h2 class="section-title">Skills</h2>
-        <div class="section-body" id="skills-list"></div>
-      </section>
-
-      <section class="section" id="certifications">
-        <h2 class="section-title">Certifications</h2>
-        <div class="section-body" id="certifications-list"></div>
-      </section>
-
-      <section class="section" id="education">
-        <h2 class="section-title">Education</h2>
-        <div class="section-body" id="education-list"></div>
-      </section>
-
-      <section class="section" id="languages">
-        <h2 class="section-title">Languages</h2>
-        <div class="section-body" id="languages-list"></div>
-      </section>
-
-      <section class="section" id="interests">
-        <h2 class="section-title">Interests</h2>
-        <div class="section-body" id="interests-list"></div>
-      </section>
-
-      <footer class="footer">
-        <p>© <span id="year"></span> Jakub Kulewicz · Built with vanilla JS</p>
-      </footer>
-    </main>
+  <div class="overlay" id="overlay-menu" hidden>
+    <nav class="overlay-nav" id="overlay-nav"></nav>
+    <div class="overlay-social" id="overlay-social"></div>
+    <p class="overlay-note">Music: Harold Budd &amp; Brian Eno — Against The Sky</p>
   </div>
+
+  <main id="stage">
+    <section class="panel" id="home" data-section="0">
+      <div class="home-stack">
+        <h1 class="sr-only" id="page-title">Jakub Kulewicz</h1>
+        <div class="wordmark" id="wordmark" aria-hidden="true"></div>
+        <p class="role-line" id="role-line"></p>
+        <a class="ghost-btn" id="home-cta" href="#contact">Get in Touch</a>
+        <div class="scroll-mouse" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
+    <section class="panel panel-about" id="about" data-section="1">
+      <div class="about-copy">
+        <h2 class="panel-kicker">About</h2>
+        <p class="about-bio" id="about-bio"></p>
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab is-on" role="tab" aria-selected="true" data-tab="education">
+            <i class="ph ph-graduation-cap" aria-hidden="true"></i> Education
+          </button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="skills">
+            <i class="ph ph-cpu" aria-hidden="true"></i> Skills
+          </button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="experience">
+            <i class="ph ph-briefcase" aria-hidden="true"></i> Experience
+          </button>
+        </div>
+        <div class="tab-panel is-on" id="tab-education" role="tabpanel"></div>
+        <div class="tab-panel" id="tab-skills" role="tabpanel" hidden></div>
+        <div class="tab-panel" id="tab-experience" role="tabpanel" hidden></div>
+      </div>
+    </section>
+
+    <section class="panel" id="work" data-section="2">
+      <h2 class="panel-kicker panel-kicker-center">Work</h2>
+      <p class="panel-lead" id="work-lead"></p>
+      <div class="service-grid" id="service-grid"></div>
+    </section>
+
+    <section class="panel" id="projects" data-section="3">
+      <h2 class="panel-kicker panel-kicker-center">Projects</h2>
+      <p class="panel-lead">Shipped products and tools. Each one is built around a real use, not a demo stack.</p>
+      <div class="carousel" id="carousel">
+        <button type="button" class="carousel-arrow carousel-arrow-prev" id="carousel-prev" aria-label="Previous project">
+          <i class="ph ph-caret-left" aria-hidden="true"></i>
+        </button>
+        <div class="carousel-stage" id="carousel-stage"></div>
+        <button type="button" class="carousel-arrow carousel-arrow-next" id="carousel-next" aria-label="Next project">
+          <i class="ph ph-caret-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel panel-contact" id="contact" data-section="4">
+      <div class="contact-card">
+        <h2 class="panel-kicker">Contact</h2>
+        <form id="contact-form" novalidate>
+          <label>
+            Name:
+            <input type="text" name="from_name" required minlength="2" autocomplete="name" />
+          </label>
+          <label>
+            Email:
+            <input type="email" name="email_id" required autocomplete="email" />
+          </label>
+          <label>
+            Message:
+            <textarea name="message" required minlength="10" rows="6"></textarea>
+          </label>
+          <p class="form-status" id="form-status" role="status"></p>
+          <div class="form-row">
+            <div class="overlay-social" id="contact-social"></div>
+            <button type="submit" class="send-btn">
+              Send <i class="ph ph-paper-plane-tilt" aria-hidden="true"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <p class="copyright" id="copyright"></p>
+    </section>
+  </main>
+
+  <div class="boot" id="boot">
+    <div class="boot-copy">
+      <div class="wordmark wordmark-boot" id="boot-wordmark" aria-hidden="true"></div>
+      <p class="boot-role" id="boot-role">SOFTWARE DEVELOPER</p>
+      <div class="boot-counter" id="boot-counter" aria-hidden="true">0</div>
+      <button type="button" class="ghost-btn boot-start" id="start-button">Start</button>
+    </div>
+  </div>
+
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"><span></span></div>
 
   <div
     id="youtube-video-modal"

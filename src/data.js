@@ -2,6 +2,7 @@ export const cv = {
   basics: {
     name: 'Jakub Kulewicz',
     headline: 'Software Developer & Scrum Master',
+    roleLine: 'SOFTWARE DEVELOPER',
     email: 'jakubkulewicz05@gmail.com',
     phone: '+48 664-987-865',
     location: 'Wrocław, Polska',
@@ -9,16 +10,60 @@ export const cv = {
     linkedin: { url: 'https://www.linkedin.com/in/jakub-k-977216129/', label: 'LinkedIn' },
   },
   summary: {
-    content: 'Full-stack developer with 4+ years of commercial experience in building and maintaining scalable microservices using C#/.NET Core, TypeScript, and React. Scrum Master leading a team of 5 developers in Agile/Scrum environments. Strong background in CI/CD, cloud solutions (Azure), and multi-database architectures. Owner of PolishTango.com — a platform focused on Argentine tango events across Poland. Passionate about clean code, automation, and delivering business value.',
+    content: 'Full-stack developer with 4+ years of commercial experience in building and maintaining scalable microservices using C#/.NET Core, TypeScript, and React. Scrum Master leading a team of 5 developers in Agile/Scrum environments. Strong background in CI/CD, cloud solutions (Azure), and multi-database architectures. Owner of PolishTango.com, a platform focused on Argentine tango events across Poland. Passionate about clean code, automation, and delivering business value.',
   },
   nav: [
-    { label: 'Experience', href: '#experience' },
+    { label: 'Home', href: '#home' },
+    { label: 'About', href: '#about' },
+    { label: 'Work', href: '#work' },
     { label: 'Projects', href: '#projects' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Certifications', href: '#certifications' },
-    { label: 'Education', href: '#education' },
-    { label: 'Languages', href: '#languages' },
-    { label: 'Interests', href: '#interests' },
+    { label: 'Contact', href: '#contact' },
+  ],
+  services: [
+    {
+      title: 'APIs & microservices',
+      body: 'C# / .NET Core services for time-tracking and ERP clients, designed for performance and clear contracts.',
+      icon: 'plugs',
+    },
+    {
+      title: 'Web applications',
+      body: 'React and TypeScript products with real users, including PolishTango and TangoDJ.',
+      icon: 'browser',
+    },
+    {
+      title: 'Azure & cloud',
+      body: 'Cloud-hosted systems plus Microsoft Azure Fundamentals certification from 2023.',
+      icon: 'cloud',
+    },
+    {
+      title: 'CI/CD',
+      body: 'Azure DevOps pipelines that cut manual release work and deployment time.',
+      icon: 'flow-arrow',
+    },
+    {
+      title: 'Data stores',
+      body: 'PostgreSQL, MySQL, and NoSQL layouts tuned for the access patterns they serve.',
+      icon: 'database',
+    },
+    {
+      title: 'Scrum delivery',
+      body: 'Scrum Master for a team of five, with ceremonies that keep delivery predictable.',
+      icon: 'users-three',
+    },
+  ],
+  skillColumns: [
+    {
+      name: 'FRONT-END',
+      keywords: ['TypeScript', 'JavaScript', 'React', 'Next.js', 'Tailwind', 'HTML', 'CSS'],
+    },
+    {
+      name: 'BACK-END',
+      keywords: ['C#', '.NET Core', 'SQL', 'Python', 'MySQL', 'PostgreSQL', 'NoSQL'],
+    },
+    {
+      name: 'CLOUD & TOOLS',
+      keywords: ['Azure', 'Azure DevOps', 'CI/CD', 'Git', 'GitHub', 'Lua', 'Unity'],
+    },
   ],
   experience: [
     {
@@ -193,4 +238,38 @@ export const devicons = {
   'PHP': 'devicon-php-plain',
   'HTML': 'devicon-html5-plain',
   'CSS': 'devicon-css3-plain',
+};
+
+export const tagHue = {
+  TypeScript: '#3178c6',
+  JavaScript: '#f7df1e',
+  'C#': '#68217a',
+  SQL: '#e38c00',
+  Lua: '#000080',
+  Python: '#3776ab',
+  '.NET Core': '#512bd4',
+  React: '#61dafb',
+  'React Native': '#61dafb',
+  'Next.js': '#e4e4e4',
+  Vite: '#646cff',
+  Supabase: '#3ecf8e',
+  Neon: '#00e599',
+  Tailwind: '#38bdf8',
+  PWA: '#5a0fc8',
+  Laravel: '#ff2d20',
+  Azure: '#0078d4',
+  'Azure DevOps': '#0078d4',
+  'CI/CD': '#2088ff',
+  MySQL: '#4479a1',
+  PostgreSQL: '#336791',
+  NoSQL: '#13aa52',
+  GitHub: '#e4e4e4',
+  Git: '#f05032',
+  Unity: '#e4e4e4',
+  PHP: '#777bb4',
+  HTML: '#e44d26',
+  CSS: '#1572b6',
+  WebGL: '#990000',
+  Backend: '#8b5cf6',
+  Frontend: '#22d3ee',
 };

@@ -18,4 +18,4 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Tech
 
-- Vite, vanilla JS, CSS (dark theme)
+Vite, vanilla JS, Three.js, GSAP, CSS. Dark cinematic wireframe experience.
