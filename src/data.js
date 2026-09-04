@@ -118,6 +118,15 @@ export const cv = {
       image: '/media/PolishTango.png',
     },
     {
+      name: 'World of Warcraft rotations',
+      website: 'https://github.com/S0ul3r/Aurora-Bober-Rogue',
+      description: 'Aurora Bober Rogue rotation by S0ul3r for World of Warcraft.',
+      tags: ['Lua'],
+      image: 'https://img.youtube.com/vi/kZ0IGSSiYlM/maxresdefault.jpg',
+      videoUrl: 'https://www.youtube.com/watch?v=kZ0IGSSiYlM',
+      previewVideo: '/media/wow-preview.mp4',
+    },
+    {
       name: 'TangoDJ',
       website: 'https://tango-dj.vercel.app/library',
       description:
@@ -163,14 +172,6 @@ export const cv = {
       tags: ['React Native', 'TypeScript'],
       image: '/media/min_spendings.png',
       imageFit: 'contain',
-    },
-    {
-      name: 'World of Warcraft rotations',
-      website: 'https://github.com/S0ul3r/Aurora-Bober-Rogue',
-      description: 'Aurora Bober Rogue rotation by S0ul3r for World of Warcraft.',
-      tags: ['Lua'],
-      image: 'https://img.youtube.com/vi/kZ0IGSSiYlM/maxresdefault.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=kZ0IGSSiYlM',
     },
     {
       name: 'Rogue Survivor',

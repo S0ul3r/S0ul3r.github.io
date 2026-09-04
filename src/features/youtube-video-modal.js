@@ -45,8 +45,9 @@ function ensureYouTubeVideoModalShell(doc) {
  * Opens on elements with `data-youtube-modal` + `data-youtube-id` (+ optional `data-video-title`).
  *
  * @param {Document} doc
+ * @param {{ onOpen?: () => void; onClose?: () => void }} [opts]
  */
-export function initYouTubeVideoModal(doc = document) {
+export function initYouTubeVideoModal(doc = document, opts = {}) {
   const root = ensureYouTubeVideoModalShell(doc);
   const backdrop = root.querySelector('.video-modal__backdrop');
   const closeBtn = root.querySelector('.video-modal__close');
@@ -72,6 +73,7 @@ export function initYouTubeVideoModal(doc = document) {
     root.classList.remove('is-open');
     root.setAttribute('aria-hidden', 'true');
     doc.body.classList.remove('video-modal-open');
+    opts.onClose?.();
     if (previousFocus instanceof HTMLElement && typeof previousFocus.focus === 'function') {
       previousFocus.focus();
     }
@@ -97,6 +99,7 @@ export function initYouTubeVideoModal(doc = document) {
     root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
     doc.body.classList.add('video-modal-open');
+    opts.onOpen?.();
     closeBtn.focus();
   };
 

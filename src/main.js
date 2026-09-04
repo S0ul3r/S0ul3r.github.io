@@ -37,11 +37,14 @@ function bootstrap() {
   initRevealOnScroll();
   initTabs();
   initProjectCarousel();
-  initYouTubeVideoModal();
   initContactForm(cv.basics.email);
   initCursorOrb();
 
   const audio = initAmbientAudio();
+  initYouTubeVideoModal(document, {
+    onOpen: () => audio.suspendForMedia(),
+    onClose: () => audio.resumeAfterMedia(),
+  });
   const canvas = document.getElementById('world');
   const world = canvas instanceof HTMLCanvasElement ? initWorld(canvas) : null;
 

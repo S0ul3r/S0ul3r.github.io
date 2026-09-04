@@ -60,10 +60,18 @@ export function buildEducation(cv, { escapeHtml }) {
       } - ${escapeHtml(e.area)}</li>`
     )
     .join('');
+  return `<ul class="edu-list">${edu}</ul>`;
+}
+
+/**
+ * @param {object} cv
+ * @param {{ escapeHtml: (v: unknown) => string }} h
+ */
+export function buildCertifications(cv, { escapeHtml }) {
   const certs = cv.certifications
     .map((c) => `<li><span>${escapeHtml(c.date)} · ${escapeHtml(c.issuer)}</span><br>${escapeHtml(c.title)}</li>`)
     .join('');
-  return `<ul class="edu-list">${edu}${certs}</ul>`;
+  return `<ul class="edu-list certification-list">${certs}</ul>`;
 }
 
 /**
@@ -150,17 +158,27 @@ export function buildCarousel(cv, tagHue, { escapeHtml, extractYouTubeVideoId })
           : '',
       ].join('');
       const imageClass = p.imageFit === 'contain' ? ' slab-image-contain' : '';
+      const projectLinkStart = p.website
+        ? `<a class="slab-project-link" href="${escapeHtml(p.website)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${escapeHtml(p.name)}">`
+        : '';
+      const projectLinkEnd = p.website ? '</a>' : '';
+      const videoPreview = p.previewVideo
+        ? `<span class="slab-video-preview" data-preview-video-src="${escapeHtml(p.previewVideo)}" aria-hidden="true"></span>`
+        : '';
+      const expandable = p.description.length > 180;
       return `<article class="slab" data-index="${index}" aria-label="View ${escapeHtml(p.name)} project">
-        <div class="slab-frame">
+        ${projectLinkStart}<div class="slab-frame">
           <div class="slab-face slab-face-front">
             ${p.image ? `<img class="${imageClass.trim()}" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" />` : ''}
+            ${videoPreview}
           </div>
           <div class="slab-face slab-face-left"></div>
           <div class="slab-face slab-face-right"></div>
-        </div>
+        </div>${projectLinkEnd}
         <div class="slab-info">
-          <h3>${escapeHtml(p.name)}</h3>
-          <p>${escapeHtml(p.description)}</p>
+          <h3>${projectLinkStart}${escapeHtml(p.name)}${projectLinkEnd}</h3>
+          <p class="slab-description">${escapeHtml(p.description)}</p>
+          ${expandable ? '<button type="button" class="description-toggle" aria-expanded="false">Read more</button>' : ''}
           <div class="tags">${tags}</div>
           <div class="slab-links">${links}</div>
         </div>

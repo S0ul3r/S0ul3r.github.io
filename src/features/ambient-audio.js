@@ -4,7 +4,7 @@
 export function initAmbientAudio() {
   const btn = document.getElementById('eq-toggle');
   const hint = document.getElementById('sound-hint');
-  if (!(btn instanceof HTMLButtonElement)) return { startFromGesture() {} };
+  if (!(btn instanceof HTMLButtonElement)) return { startFromGesture() {}, suspendForMedia() {}, resumeAfterMedia() {} };
 
   const audio = new Audio('/media/against-the-sky.mp3');
   audio.loop = true;
@@ -12,6 +12,7 @@ export function initAmbientAudio() {
   audio.volume = 0.42;
 
   let on = false;
+  let shouldResumeAfterMedia = false;
 
   const setOn = async (next) => {
     on = next;
@@ -38,6 +39,14 @@ export function initAmbientAudio() {
   return {
     startFromGesture() {
       void setOn(true);
+    },
+    suspendForMedia() {
+      shouldResumeAfterMedia = on && !audio.paused;
+      audio.pause();
+    },
+    resumeAfterMedia() {
+      if (shouldResumeAfterMedia && on) void audio.play();
+      shouldResumeAfterMedia = false;
     },
   };
 }

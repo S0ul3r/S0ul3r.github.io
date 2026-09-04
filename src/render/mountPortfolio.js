@@ -21,6 +21,7 @@ export function mountPortfolioView(cv, devicons, tagHue, helpers) {
   set('contact-social', social);
   set('about-bio', helpers.escapeHtml(cv.summary.content));
   set('tab-education', Templates.buildEducation(cv, helpers));
+  set('tab-certifications', Templates.buildCertifications(cv, helpers));
   set('tab-skills', Templates.buildSkills(cv, devicons, helpers));
   set('tab-experience', Templates.buildExperience(cv, helpers));
   set('service-grid', Templates.buildServices(cv, helpers));

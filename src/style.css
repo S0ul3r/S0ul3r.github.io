@@ -332,6 +332,11 @@ body.is-menu-open #stage {
   visibility: hidden;
 }
 
+body.is-menu-open .slab-info {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 .overlay[hidden] {
   display: none;
 }
@@ -612,6 +617,7 @@ body.is-past-home .scroll-mouse {
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   margin-bottom: 1.4rem;
 }
@@ -812,6 +818,17 @@ body.is-past-home .scroll-mouse {
   transform-style: preserve-3d;
 }
 
+.slab-project-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.slab.is-active .slab-project-link {
+  pointer-events: auto;
+}
+
 .slab-face {
   position: absolute;
   inset: 0;
@@ -836,6 +853,26 @@ body.is-past-home .scroll-mouse {
   object-position: center;
   padding: 1rem;
   background: #080808;
+}
+
+.slab-video-preview,
+.slab-video-preview video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.slab-video-preview {
+  overflow: hidden;
+  background: transparent;
+}
+
+.slab-video-preview video {
+  object-fit: cover;
+  transform: scale(1.02);
 }
 
 .slab-face-left,
@@ -906,6 +943,12 @@ body.is-past-home .scroll-mouse {
   color: #fff;
 }
 
+.slab-info h3 .slab-project-link {
+  display: inline;
+  width: auto;
+  height: auto;
+}
+
 .slab-info p {
   margin: 0 0 0.65rem;
   font-style: italic;
@@ -916,6 +959,40 @@ body.is-past-home .scroll-mouse {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.slab-info p.is-expanded {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+.description-toggle {
+  margin: -0.25rem auto 0.65rem;
+  padding: 0.15rem 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  background: transparent;
+  color: #d9d9d9;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.carousel-side-target {
+  position: absolute;
+  z-index: 24;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.carousel-side-target:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.75);
+  outline-offset: -3px;
 }
 
 .tags {
@@ -950,7 +1027,7 @@ body.is-past-home .scroll-mouse {
 .carousel-arrow {
   position: absolute;
   bottom: 0.4rem;
-  z-index: 2;
+  z-index: 30;
   background: none;
   border: 0;
   color: #fff;
@@ -1186,7 +1263,7 @@ body.is-live .cursor-ring {
 .video-modal__panel {
   position: relative;
   z-index: 1;
-  width: min(960px, 100%);
+  width: min(1200px, 96vw);
   padding: 0.75rem;
   border: 1px solid var(--hair);
   background: #161616;
