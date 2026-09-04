@@ -221,7 +221,7 @@ export const devicons = {
   '.NET Core': 'devicon-dotnetcore-plain',
   'React': 'devicon-react-original',
   'React Native': 'devicon-react-original',
-  'Next.js': 'devicon-nextjs-plain',
+  'Next.js': 'devicon-nextjs-original-wordmark',
   'Vite': 'devicon-vitejs-plain',
   'Supabase': 'devicon-supabase-plain',
   'Neon': 'devicon-postgresql-plain',
