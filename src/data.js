@@ -202,7 +202,7 @@ export const cv = {
   interests: [
     { name: 'Music', keywords: ['Playing piano', 'Indie', 'Electronic', 'Rock'] },
     { name: 'Sports', keywords: ['Skiing', 'Badminton', 'Hockey'] },
-    { name: 'Dancing', keywords: ['Ballroom', 'Salsa', 'Son', 'Argentine Tango'] },
+    { name: 'Dancing', keywords: ['Ballroom', 'Salsa', 'Son', 'Argentine Tango', 'Charlestone', 'Lindy Hop'] },
   ],
   interestsVideo: {
     url: 'https://www.youtube.com/watch?v=1xnJAcBFodk',
